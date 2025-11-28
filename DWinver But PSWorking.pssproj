@@ -1,0 +1,111 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>6CAFC0C6-A428-4d30-A9F9-700E829FEA51</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MyApplication</RootNamespace>
+    <AssemblyName>MyApplication</AssemblyName>
+    <Name>DWinver But PSWorking</Name>
+    <ManifestPath>$(OutDir)\$(ProjectName).psd1</ManifestPath>
+    <Author>Dev0630</Author>
+    <CompanyName>Dev Setup</CompanyName>
+    <Copyright>© Copyright All Rats reserved!</Copyright>
+    <Description>Fish</Description>
+    <Version>2.0</Version>
+    <Guid>91157689-cd9e-4c49-acb4-3d23c9691f7e</Guid>
+    <ProcessorArchitecture />
+    <PackageAsExecutable>True</PackageAsExecutable>
+    <Bundle>False</Bundle>
+    <Obfuscate>False</Obfuscate>
+    <HideConsoleWindow>True</HideConsoleWindow>
+    <DotNetVersion>net8.0</DotNetVersion>
+    <RequireElevation>False</RequireElevation>
+    <PackageModules>False</PackageModules>
+    <PackageType>Console</PackageType>
+    <HighDPISupport>False</HighDPISupport>
+    <PackagePlatform>x86</PackagePlatform>
+    <PowerShellVersion>Windows PowerShell</PowerShellVersion>
+    <OutputName>DWinver2.0test.exe</OutputName>
+    <OperatingSystem>Windows</OperatingSystem>
+    <FileVersion>2.0</FileVersion>
+    <FileDescription>Fish</FileDescription>
+    <ProductName>DWinver</ProductName>
+    <ProductVersion>2.0</ProductVersion>
+    <ApplicationIconPath>C:\Users\vagvo\Desktop\dwinver\shell32_3.ico</ApplicationIconPath>
+    <PowerShellArgs>-NoProfile -ExecutionPolicy Bypass -NoExit</PowerShellArgs>
+    <PackageEntryPoint>DWinver.ps1</PackageEntryPoint>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DWinver.designer.ps1">
+      <SubType>Code</SubType>
+      <DependentUpon>DWinver.ps1</DependentUpon>
+    </Compile>
+    <Compile Include="DWinver.ps1">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>System</Name>
+      <AssemblyName>System.dll</AssemblyName>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Drawing</Name>
+      <AssemblyName>System.Drawing.dll</AssemblyName>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Drawing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>System.Windows.Forms</Name>
+      <AssemblyName>System.Windows.Forms.dll</AssemblyName>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Windows.Forms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\license.ico">
+      <Resource>True</Resource>
+    </Content>
+    <Content Include="Resources\owner.ico">
+      <Resource>True</Resource>
+    </Content>
+    <Content Include="Resources\programdata.ico">
+      <Resource>True</Resource>
+    </Content>
+    <Content Include="Resources\support.ico">
+      <Resource>True</Resource>
+    </Content>
+    <Content Include="Resources\systeminfo.ico">
+      <Resource>True</Resource>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DWinver.resx">
+      <DependentUpon>DWinver.ps1</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\PowerShell Tools for Visual Studio\PowerShellTools.targets" Condition="Exists('$(MSBuildExtensionsPath)\PowerShell Tools for Visual Studio\PowerShellTools.targets')" />
+</Project>
