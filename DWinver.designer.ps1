@@ -49,7 +49,7 @@ $LicenseIcon.Location = New-Object Drawing.Point(20,560)
 $LicenseIcon.Visible = $false
 $form.Controls.Add($LicenseIcon)
 
-# ---- Labels (static text) ----
+# ---- Labels ----
 $SoftwareLabel = New-Object Windows.Forms.Label
 $SoftwareLabel.ForeColor = [System.Drawing.Color]::White
 $SoftwareLabel.Font = New-Object Drawing.Font("Segoe UI",12,[Drawing.FontStyle]::Bold)
@@ -106,3 +106,9 @@ $licBtn.Text = "License"
 $licBtn.Size = New-Object Drawing.Size(120,35)
 $licBtn.Location = New-Object Drawing.Point(400,635)
 $form.Controls.Add($licBtn)
+
+# ---- Debug Mode Setup ----
+# This will only create UI if -debug argument is passed in Main script
+$DebugTextBox = $null
+$DebugForm = $null
+$DebugFormTextBox = $null
