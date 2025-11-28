@@ -1,7 +1,7 @@
 # ==============================
 # Load Designer
 # ==============================
-. "$PSScriptRoot\DWinver.Designer.ps1"
+. "$PSScriptRoot\DWinver.designer.ps1"
 
 # ==============================
 # Detect Debug Mode
