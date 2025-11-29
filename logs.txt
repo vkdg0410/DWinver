@@ -1,40 +1,8 @@
-Build started at 16:31...
+Build started at 17:39...
 ------ Build started: Project: DWinver But PSWorking, Configuration: Debug Any CPU ------
-		OutputPath is C:\Users\vagvo\source\repos\DWinver But PSWorking\bin\Debug\
-		Bundling DWinver.ps1
-		Parsing file DWinver.ps1.
-		Packaging C:\Users\vagvo\AppData\Local\Temp\DWinver.ps1
-		Creating temp directory: C:\Users\vagvo\source\repos\DWinver But PSWorking\bin\Debug\bin\2736bf141d31480693730ad16c8fa4cf
-		Packaging modules...
-		Checking dotnet version.
-		Checking dotnet SDK version.
-		10.0.100
-
-		.NET SDK Version: 10.0.100
-
-		Creating package project.
-		Using .NET Framework version: net8.0
-		  Determining projects to restore...
-  Restored C:\Users\vagvo\source\repos\DWinver But PSWorking\bin\Debug\bin\2736bf141d31480693730ad16c8fa4cf\DWinver2.0test.csproj (in 116 ms).
-
-		  Determining projects to restore...
-  Restored C:\Users\vagvo\source\repos\DWinver But PSWorking\bin\Debug\bin\2736bf141d31480693730ad16c8fa4cf\DWinver2.0test.csproj (in 116 ms).
-
-		Packaging C:\Users\vagvo\AppData\Local\Temp\DWinver.ps1 -> C:\Users\vagvo\source\repos\DWinver But PSWorking\bin\Debug\DWinver2.0test.exe
-		  Determining projects to restore...
-  All projects are up-to-date for restore.
-C:\Program Files\dotnet\sdk\10.0.100\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.RuntimeIdentifierInference.targets(293,5): warning NETSDK1189: Prefer32Bit is not supported and has no effect for netcoreapp target. [C:\Users\vagvo\source\repos\DWinver But PSWorking\bin\Debug\bin\2736bf141d31480693730ad16c8fa4cf\DWinver2.0test.csproj]
-C:\Program Files\dotnet\sdk\10.0.100\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.DefaultItems.targets(151,5): error NETSDK1136: The target platform must be set to Windows (usually by including '-windows' in the TargetFramework property) when using Windows Forms or WPF, or referencing projects or packages that do so. [C:\Users\vagvo\source\repos\DWinver But PSWorking\bin\Debug\bin\2736bf141d31480693730ad16c8fa4cf\DWinver2.0test.csproj]
+C:\Program Files\dotnet\sdk\10.0.100\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.DefaultItems.Shared.targets(201,5): error NETSDK1022: Duplicate 'EmbeddedResource' items were included. The .NET SDK includes 'EmbeddedResource' items from your project directory by default. You can either remove these items from your project file, or set the 'EnableDefaultEmbeddedResourceItems' property to 'false' if you want to explicitly include them in your project file. For more information, see https://aka.ms/sdkimplicititems. The duplicate items were: 'DWinver.resx'
+Done building project "DWinver But PSWorking.pssproj" -- FAILED.
 
 Build FAILED.
-
-C:\Program Files\dotnet\sdk\10.0.100\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.RuntimeIdentifierInference.targets(293,5): warning NETSDK1189: Prefer32Bit is not supported and has no effect for netcoreapp target. [C:\Users\vagvo\source\repos\DWinver But PSWorking\bin\Debug\bin\2736bf141d31480693730ad16c8fa4cf\DWinver2.0test.csproj]
-C:\Program Files\dotnet\sdk\10.0.100\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.DefaultItems.targets(151,5): error NETSDK1136: The target platform must be set to Windows (usually by including '-windows' in the TargetFramework property) when using Windows Forms or WPF, or referencing projects or packages that do so. [C:\Users\vagvo\source\repos\DWinver But PSWorking\bin\Debug\bin\2736bf141d31480693730ad16c8fa4cf\DWinver2.0test.csproj]
-    1 Warning(s)
-    1 Error(s)
-
-Time Elapsed 00:00:01.84
-
-C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\PowerShell Tools for Visual Studio\PowerShellTools.targets(14,5): error : Failed to build.
-========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
-========== Build completed at 16:31 and took 08,062 seconds ==========
+========== Build: 0 succeeded, 1 failed, 0 up-to-date, 0 skipped ==========
+========== Build completed at 17:39 and took 00,506 seconds ==========
