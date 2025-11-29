@@ -1,8 +1,33 @@
-Build started at 17:39...
------- Build started: Project: DWinver But PSWorking, Configuration: Debug Any CPU ------
-C:\Program Files\dotnet\sdk\10.0.100\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.DefaultItems.Shared.targets(201,5): error NETSDK1022: Duplicate 'EmbeddedResource' items were included. The .NET SDK includes 'EmbeddedResource' items from your project directory by default. You can either remove these items from your project file, or set the 'EnableDefaultEmbeddedResourceItems' property to 'false' if you want to explicitly include them in your project file. For more information, see https://aka.ms/sdkimplicititems. The duplicate items were: 'DWinver.resx'
-Done building project "DWinver But PSWorking.pssproj" -- FAILED.
-
-Build FAILED.
-========== Build: 0 succeeded, 1 failed, 0 up-to-date, 0 skipped ==========
-========== Build completed at 17:39 and took 00,506 seconds ==========
+PS C:\Users\vagvo\source\repos\DWinver But PSWorking> C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1
+Step 1/20: Prepared GUI Assembly Types Loaded
+Step 2/20: Prepared Software Info Initialized
+Step 3/20: Prepared Support and Owner Info Initialized
+Step 4/20: Prepared Registry Path Initialized
+Step 4 failed: Compiled Assembly Load Error - Cannot add type. The ".EXE" extension is not supported.
+Step 5/20: Prepared Resource Loader Ready
+Step 6/20: Prepared Main Form Created
+Step 7/20: Prepared Title Label Added
+Step 7 failed: Resource Load Error for owner - Unable to find type [DWinver.Properties.Resources].
+Step 8/20: Prepared PictureBox OwnerIcon Added
+Step 8 failed: Resource Load Error for support - Unable to find type [DWinver.Properties.Resources].
+Step 9/20: Prepared PictureBox SupportIcon Added
+Step 9 failed: Resource Load Error for programdata - Unable to find type [DWinver.Properties.Resources].
+Step 10/20: Prepared PictureBox ProgramIcon Added
+Step 10 failed: Resource Load Error for license - Unable to find type [DWinver.Properties.Resources].
+Step 11/20: Prepared PictureBox LicenseIcon Added
+Step 11 failed: Resource Load Error for systeminfo - Unable to find type [DWinver.Properties.Resources].
+Step 12/20: Prepared PictureBox SystemIcon Added
+Step 13/20: Prepared Label License Added
+Step 14/20: Prepared Label Support Added
+Step 15/20: Prepared Label Software Added
+Step 16/20: Prepared Label Owner Added
+Step 17/20: Prepared Label System Added
+Step 18/20: Prepared Owner Label Email Added
+Step 19/20: Prepared Owner TextBox Email Added
+Step 20/20: Prepared Owner Label Name Added
+Step 21/20: Prepared Owner TextBox Name Added
+Step 22/20: Prepared Owner Label Phone Added
+Step 23/20: Prepared Owner TextBox Phone Added
+Step 23 failed: Main Button Error - Method invocation failed because [System.Object[]] does not contain a method named 'op_Subtraction'.
+Step 24/20: Prepared System Toggle Button Added
+Step 25/20: Prepared License Toggle Button Added
