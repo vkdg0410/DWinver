@@ -20,7 +20,6 @@
     <Obfuscate>False</Obfuscate>
     <HideConsoleWindow>True</HideConsoleWindow>
     <DotNetVersion>net8.0</DotNetVersion>
-    <TargetFramework>net8.0 -windows</TargetFramework>
     <RequireElevation>False</RequireElevation>
     <PackageModules>True</PackageModules>
     <PackageType>Console</PackageType>
