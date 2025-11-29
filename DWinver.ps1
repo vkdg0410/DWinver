@@ -1,27 +1,27 @@
-$DWinver_Load = {
-
+# ==============================
+# Step Counter Setup
+# ==============================
+$totalSteps = 20  # adjust if you add more prep steps
+$currentStep = 0
+function Log-Prep([string]$name) {
+    $global:currentStep++
+    Write-Host ("Step {0}/{1}: Prepared {2}" -f $currentStep, $totalSteps, $name)
 }
+
+$DWinver_Load = { }
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-
-# ==============================
-# GUI Start Message
-# ==============================
-Write-Host "Starting GUI..."
-$prepsrequired = "6"
-Write-Host "Preped something!" $prepsrequired "of theese are required!"
+Log-Prep "GUI Assembly Types Loaded"
 
 # ==============================
 # Software Information
 # ==============================
+$OS  = (Get-CimInstance Win32_OperatingSystem).Caption
+$CPU = (Get-CimInstance Win32_Processor).Name
+$RAM = "{0:N2}" -f ((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory/1GB) + " GB"
+Log-Prep "System Specs Gathered"
 
-# System Specs (Moved because the OS value gets called before the OS value is even set!)
-$OS           = (Get-CimInstance Win32_OperatingSystem).Caption
-$CPU          = (Get-CimInstance Win32_Processor).Name
-$RAM          = "{0:N2}" -f ((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory/1GB) + " GB"
-
-#Software Information
 $AppName      = "D" + $OS
 $Version      = "DWinVer 2.0"
 $Company      = "Dev Setup"
@@ -30,54 +30,51 @@ $ReleaseDate  = "October 1, 2024"
 $Description  = "Fish"
 $Copyright    = "© Copyright Dev Setup All Rats reserved!"
 $ButtonText   = "I Rat it!"
+Log-Prep "Software Info Initialized"
 
-# Owner Info
 $ComputerName = $env:COMPUTERNAME
 
-# License
 $License      = "Product keys will come out in V-3.0!"
 
-# Support Info
 $SupportName    = "Vagvolgyi-Krucso David Gabor"
 $SupportCompany = "Dev Setup"
 $SupportEmail   = "vkdg0410@gmail.com"
 $SupportPhone   = "+36204927891"
-
-Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
+Log-Prep "Support and Owner Info Initialized"
 
 # ==============================
-# Registry path for owner info
+# Registry Setup
 # ==============================
 $regPath = "HKCU:\Software\DWindows"
 If (-not (Test-Path $regPath)) { New-Item -Path $regPath | Out-Null }
-
-Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
+Log-Prep "Registry Path Initialized"
 
 # ==============================
-# Automatically detect compiled assembly
+# Detect Compiled Assembly
 # ==============================
 $projectRoot = $PSScriptRoot
 $binFolder = Join-Path $projectRoot "bin"
-$assemblyPath = Get-ChildItem -Path $binFolder -Recurse -Filter "DWinver*.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+$assemblyPath = Get-ChildItem -Path $binFolder -Recurse -Filter "DWinver*.exe" |
+    Sort-Object LastWriteTime -Descending | Select-Object -First 1
 if (-not $assemblyPath) { throw "Compiled assembly not found. Build your project first!" }
 
 Add-Type -Path $assemblyPath.FullName
+Log-Prep "Compiled Assembly Loaded"
 
-# Helper function to get embedded resource images/icons
 function Get-Resource([string]$name) {
     return [DWinver.Properties.Resources]::$name
 }
-
-Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
+Log-Prep "Resource Loader Ready"
 
 # ==============================
-# Create Main Form
+# GUI Form Creation
 # ==============================
 $form = New-Object Windows.Forms.Form
 $form.Text = "About DWindows"
 $form.Size = New-Object Drawing.Size(550,750)
 $form.StartPosition = "CenterScreen"
 $form.BackColor = [System.Drawing.Color]::MediumPurple
+Log-Prep "Main Form Created"
 
 # --- Title ---
 $titleLabel = New-Object Windows.Forms.Label
@@ -87,8 +84,9 @@ $titleLabel.Font = New-Object Drawing.Font("Segoe UI",18,[Drawing.FontStyle]::Bo
 $titleLabel.AutoSize = $true
 $titleLabel.Location = New-Object Drawing.Point(150,20)
 $form.Controls.Add($titleLabel)
+Log-Prep "Title Label Added"
 
-# --- Icons and Labels ---
+# --- Icons ---
 $resources = @{
     ProgramIcon = @{Point=[Drawing.Point]::new(20,80); Resource="programdata"}
     OwnerIcon   = @{Point=[Drawing.Point]::new(20,230); Resource="owner"}
@@ -97,6 +95,18 @@ $resources = @{
     LicenseIcon = @{Point=[Drawing.Point]::new(20,560); Resource="license"; Visible=$false}
 }
 
+foreach ($key in $resources.Keys) {
+    $pic = New-Object Windows.Forms.PictureBox
+    $pic.SizeMode = 'AutoSize'
+    $pic.Location = $resources[$key].Point
+    $pic.Image = Get-Resource $resources[$key].Resource
+    if ($resources[$key].ContainsKey("Visible")) { $pic.Visible = $resources[$key].Visible }
+    $form.Controls.Add($pic)
+    Set-Variable $key $pic
+    Log-Prep ("PictureBox " + $key + " Added")
+}
+
+# --- Labels ---
 $labels = @{
     Software    = @{Text=@"
 --- Software Information ---
@@ -131,18 +141,6 @@ $License
 "@; Point=[Drawing.Point]::new(50,560); Visible=$false}
 }
 
-# Create PictureBoxes
-foreach ($key in $resources.Keys) {
-    $pic = New-Object Windows.Forms.PictureBox
-    $pic.SizeMode = 'AutoSize'
-    $pic.Location = $resources[$key].Point
-    $pic.Image = Get-Resource $resources[$key].Resource
-    if ($resources[$key].ContainsKey("Visible")) { $pic.Visible = $resources[$key].Visible }
-    $form.Controls.Add($pic)
-    Set-Variable $key $pic
-}
-
-# Create Labels
 foreach ($key in $labels.Keys) {
     $lbl = New-Object Windows.Forms.Label
     $lbl.Text = $labels[$key].Text
@@ -153,9 +151,10 @@ foreach ($key in $labels.Keys) {
     if ($labels[$key].ContainsKey("Visible")) { $lbl.Visible = $labels[$key].Visible }
     $form.Controls.Add($lbl)
     Set-Variable ($key + "Label") $lbl
+    Log-Prep ("Label " + $key + " Added")
 }
 
-# --- Editable Owner Fields ---
+# --- Owner Fields ---
 $ownerFields = @{
     Name  = @{Registry="OwnerName"; Y=300}
     Email = @{Registry="OwnerEmail"; Y=335}
@@ -163,7 +162,6 @@ $ownerFields = @{
 }
 
 foreach ($field in $ownerFields.Keys) {
-    # Label
     $lbl = New-Object Windows.Forms.Label
     $lbl.Text = $field
     $lbl.ForeColor = [System.Drawing.Color]::White
@@ -171,8 +169,8 @@ foreach ($field in $ownerFields.Keys) {
     $lbl.AutoSize = $true
     $lbl.Location = New-Object Drawing.Point(50, $ownerFields[$field].Y)
     $form.Controls.Add($lbl)
+    Log-Prep ("Owner Label " + $field + " Added")
 
-    # TextBox
     $txt = New-Object Windows.Forms.TextBox
     $txt.Text = (Get-ItemProperty -Path $regPath -Name $ownerFields[$field].Registry -ErrorAction SilentlyContinue).$($ownerFields[$field].Registry)
     $txt.Font = New-Object Drawing.Font("Segoe UI",12)
@@ -180,23 +178,20 @@ foreach ($field in $ownerFields.Keys) {
     $txt.Location = New-Object Drawing.Point(150,$ownerFields[$field].Y)
     $txt.Add_Leave({ Set-ItemProperty -Path $regPath -Name $ownerFields[$field].Registry -Value $txt.Text })
     $form.Controls.Add($txt)
+    Log-Prep ("Owner TextBox " + $field + " Added")
 }
 
 # --- Buttons ---
-$buttonWidth = 140
-$buttonHeight = 40
-$bottomY = $form.ClientSize.Height - 80
-$centerX = [int](($form.ClientSize.Width - $buttonWidth)/2)
-
 $mainButton = New-Object Windows.Forms.Button
 $mainButton.Text = $ButtonText
 $mainButton.BackColor = [System.Drawing.Color]::LightSkyBlue
-$mainButton.Size = New-Object Drawing.Size($buttonWidth,$buttonHeight)
-$mainButton.Location = New-Object Drawing.Point($centerX,$bottomY)
+$mainButton.Size = New-Object Drawing.Size(140,40)
+$mainButton.Location = New-Object Drawing.Point([int](($form.ClientSize.Width-140)/2), $form.ClientSize.Height-80)
 $mainButton.Add_Click({ $form.Close() })
 $form.Controls.Add($mainButton)
+Log-Prep "Main Button Added"
 
-# System Specs toggle
+# --- System Specs Toggle ---
 $sysBtn = New-Object Windows.Forms.Button
 $sysBtn.Text = "System Specs"
 $sysBtn.Size = New-Object Drawing.Size(120,35)
@@ -208,11 +203,12 @@ $sysBtn.Add_Click({
     $SystemIcon.Visible = $newState
 })
 $form.Controls.Add($sysBtn)
+Log-Prep "System Toggle Button Added"
 
-# License toggle
+# --- License Toggle ---
 $licBtn = New-Object Windows.Forms.Button
 $licBtn.Text = "License"
-$licBtn.Size = New-Object Drawing.Size(120,35)
+$licBtn.Size = New-Object Windows.Forms.Size(120,35)
 $licBtn.Location = New-Object Drawing.Point(400,635)
 $licBtn.BackColor = [System.Drawing.Color]::Green
 $licBtn.Add_Click({
@@ -221,9 +217,8 @@ $licBtn.Add_Click({
     $LicenseIcon.Visible = $newState
 })
 $form.Controls.Add($licBtn)
-
-Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
+Log-Prep "License Toggle Button Added"
 
 # --- Show Form ---
 [void]$form.ShowDialog()
-Write-Host "Everything loaded! The GUI should display!"
+Log-Prep "GUI Displayed - Everything Loaded"
