@@ -414,4 +414,3 @@ try {
 } catch {
     Log-Error "GUI Display" $_.Exception.Message
 }
-```0
