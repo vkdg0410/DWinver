@@ -6,6 +6,13 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 # ==============================
+# GUI Start Message
+# ==============================
+Write-Host "Starting GUI..."
+$prepsrequired = "6"
+Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
+
+# ==============================
 # Software Information
 # ==============================
 $AppName      = "D" + $OS
@@ -34,11 +41,15 @@ $SupportCompany = "Dev Setup"
 $SupportEmail   = "vkdg0410@gmail.com"
 $SupportPhone   = "+36204927891"
 
+Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
+
 # ==============================
 # Registry path for owner info
 # ==============================
 $regPath = "HKCU:\Software\DWindows"
 If (-not (Test-Path $regPath)) { New-Item -Path $regPath | Out-Null }
+
+Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
 
 # ==============================
 # Automatically detect compiled assembly
@@ -54,6 +65,8 @@ Add-Type -Path $assemblyPath.FullName
 function Get-Resource([string]$name) {
     return [DWinver.Properties.Resources]::$name
 }
+
+Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
 
 # ==============================
 # Create Main Form
@@ -207,5 +220,8 @@ $licBtn.Add_Click({
 })
 $form.Controls.Add($licBtn)
 
+Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
+
 # --- Show Form ---
 [void]$form.ShowDialog()
+Write-Host "Everything loaded! The GUI should display!"
