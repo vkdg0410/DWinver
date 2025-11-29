@@ -10,11 +10,17 @@ Add-Type -AssemblyName System.Drawing
 # ==============================
 Write-Host "Starting GUI..."
 $prepsrequired = "6"
-Write-Host "Preped something! " + $prepsrequired + "of theese are required!"
+Write-Host "Preped something!" $prepsrequired "of theese are required!"
 
 # ==============================
 # Software Information
 # ==============================
+# System Specs (Moved because the OS value gets called before the OS value is even set!)
+$OS           = (Get-CimInstance Win32_OperatingSystem).Caption
+$CPU          = (Get-CimInstance Win32_Processor).Name
+$RAM          = "{0:N2}" -f ((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory/1GB) + " GB"
+
+#Software Information
 $AppName      = "D" + $OS
 $Version      = "DWinVer 2.0"
 $Company      = "Dev Setup"
@@ -26,11 +32,6 @@ $ButtonText   = "I Rat it!"
 
 # Owner Info
 $ComputerName = $env:COMPUTERNAME
-
-# System Specs
-$OS           = (Get-CimInstance Win32_OperatingSystem).Caption
-$CPU          = (Get-CimInstance Win32_Processor).Name
-$RAM          = "{0:N2}" -f ((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory/1GB) + " GB"
 
 # License
 $License      = "Product keys will come out in V-3.0!"
