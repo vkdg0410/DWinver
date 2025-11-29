@@ -21,7 +21,7 @@ $Company      = "Dev Setup"
 $Author       = "Dev0630"
 $ReleaseDate  = "October 1, 2024"
 $Description  = "Fish"
-$Copyright    = "� Copyright Dev Setup All Rats reserved!"
+$Copyright    = "© Copyright Dev Setup All Rats reserved!"
 $ButtonText   = "I Rat it!"
 
 # Owner Info
