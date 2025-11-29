@@ -15,6 +15,7 @@ Write-Host "Preped something!" $prepsrequired "of theese are required!"
 # ==============================
 # Software Information
 # ==============================
+
 # System Specs (Moved because the OS value gets called before the OS value is even set!)
 $OS           = (Get-CimInstance Win32_OperatingSystem).Caption
 $CPU          = (Get-CimInstance Win32_Processor).Name
