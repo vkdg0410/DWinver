@@ -112,3 +112,4 @@ $form.Controls.Add($licBtn)
 $DebugTextBox = $null
 $DebugForm = $null
 $DebugFormTextBox = $null
+	

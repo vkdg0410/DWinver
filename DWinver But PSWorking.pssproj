@@ -19,9 +19,9 @@
     <Bundle>False</Bundle>
     <Obfuscate>False</Obfuscate>
     <HideConsoleWindow>True</HideConsoleWindow>
-    <DotNetVersion>net9.0</DotNetVersion>
+    <DotNetVersion>net9.0 -windows</DotNetVersion>
     <RequireElevation>False</RequireElevation>
-    <PackageModules>False</PackageModules>
+    <PackageModules>True</PackageModules>
     <PackageType>Console</PackageType>
     <HighDPISupport>False</HighDPISupport>
     <PackagePlatform>x86</PackagePlatform>
