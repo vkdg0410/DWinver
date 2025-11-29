@@ -1,15 +1,18 @@
 # ==============================
 # Step Counter Setup
 # ==============================
-$totalSteps = 20  # adjust if you add more prep steps
+$totalSteps = 28
 $currentStep = 0
 function Log-Prep([string]$name) {
     $global:currentStep++
-    Write-Host ("Step {0}/{1}: Prepared {2}" -f $currentStep, $totalSteps, $name)
+    Write-Host ("Step {0}/{1}: Prepared {2}" -f $global:currentStep, $totalSteps, $name)
 }
 
 $DWinver_Load = { }
 
+# ==============================
+# Load WinForms + Drawing
+# ==============================
 try {
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName System.Drawing
@@ -19,12 +22,26 @@ try {
 }
 
 # ==============================
-# Software Information
+# Software / System Information
 # ==============================
 try {
-    $OS  = (Get-CimInstance Win32_OperatingSystem).Caption
-    $CPU = (Get-CimInstance Win32_Processor).Name
-    $RAM = "{0:N2}" -f ((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory/1GB) + " GB"
+    # safe CIM reads (don't assume success)
+    $OS = "Unknown OS"
+    $CPU = "Unknown CPU"
+    $RAM = "Unknown RAM"
+    try {
+        $osObj = Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction Stop
+        if ($osObj -and $osObj.Caption) { $OS = $osObj.Caption }
+    } catch {}
+    try {
+        $cpuObj = Get-CimInstance -ClassName Win32_Processor -ErrorAction Stop
+        if ($cpuObj -and $cpuObj.Name) { $CPU = $cpuObj.Name }
+    } catch {}
+    try {
+        $csObj = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction Stop
+        if ($csObj -and $csObj.TotalPhysicalMemory) { $RAM = "{0:N2} GB" -f ($csObj.TotalPhysicalMemory / 1GB) }
+    } catch {}
+
     Log-Prep "System Specs Gathered"
 } catch {
     Write-Host "Step $currentStep failed: System Specs Error - $_"
@@ -57,58 +74,54 @@ try {
 }
 
 # ==============================
-# Registry Setup
+# Registry Setup (ensure $regPath exists)
 # ==============================
 try {
-    Log-Prep "Step $currentStep: Getting OS name..."
-    $OS = (Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction Stop).Caption
-
-    Log-Prep "Step $currentStep: Getting CPU info..."
-    $cpuInfo = Get-CimInstance -ClassName Win32_Processor -ErrorAction Stop
-    if ($cpuInfo -and $cpuInfo.Name) {
-        $CPU = $cpuInfo.Name
-    } else {
-        $CPU = "Unknown CPU (CIM returned empty)"
-        Log-Prep "Step $currentStep: CPU info incomplete — using fallback."
-    }
-
-    Log-Prep "Step $currentStep: Getting RAM..."
-    $cs = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction Stop
-    $RAM = "{0:N2} GB" -f ($cs.TotalPhysicalMemory / 1GB)
-
-    Log-Prep "Step $currentStep: System Specs Gathered Successfully"
-}
-catch {
-    $msg = $_.Exception.Message
-    Log-Prep "ERROR in Step $currentStep: $msg"
-}
-
-# ==============================
-# Detect Compiled Assembly
-# ==============================
-try {
-    $projectRoot = $PSScriptRoot
-    $binFolder = Join-Path $projectRoot "bin"
-    $assemblyPath = Get-ChildItem -Path $binFolder -Recurse -Filter "DWinver*.exe" |
-        Sort-Object LastWriteTime -Descending | Select-Object -First 1
-    if (-not $assemblyPath) { throw "Compiled assembly not found." }
-
-    Add-Type -Path $assemblyPath.FullName
-    Log-Prep "Compiled Assembly Loaded"
+    $regPath = "HKCU:\Software\DWinver"
+    if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
+    Log-Prep "Registry Path Initialized"
 } catch {
-    Write-Host "Step $currentStep failed: Compiled Assembly Load Error - $_"
+    Write-Host "Step $currentStep failed: Registry Setup Error - $_"
 }
 
 # ==============================
-# Resource Loader
+# (Removed) Compiled assembly Add-Type - EXE cannot be loaded
+# ==============================
+# We intentionally do NOT call Add-Type on an .exe — that was failing.
+# If you need to load a DLL, call Add-Type -Path 'path\to.dll' instead.
+Log-Prep "Skipped invalid EXE Add-Type (not required)"
+
+# ==============================
+# Resource Loader (loads files from Resources\ folder)
 # ==============================
 function Get-Resource([string]$name) {
-    try {
-        return [DWinver.Properties.Resources]::$name
-    } catch {
-        Write-Host "Step $global:currentStep failed: Resource Load Error for $name - $_"
-        return $null
+    $candidates = @(
+        Join-Path $PSScriptRoot "Resources\$name.ico",
+        Join-Path $PSScriptRoot "Resources\$name.png",
+        Join-Path $PSScriptRoot "Resources\$name.jpg"
+    )
+    foreach ($path in $candidates) {
+        if (Test-Path $path) {
+            try {
+                $ext = [System.IO.Path]::GetExtension($path).ToLowerInvariant()
+                if ($ext -eq ".ico") {
+                    try {
+                        $icon = New-Object System.Drawing.Icon($path)
+                        return $icon.ToBitmap()
+                    } catch {
+                        return [System.Drawing.Image]::FromFile($path)
+                    }
+                } else {
+                    return [System.Drawing.Image]::FromFile($path)
+                }
+            } catch {
+                Write-Host ("Resource load failed for {0}: {1}" -f $path, $_.Exception.Message)
+                return $null
+            }
+        }
     }
+    Write-Host ("Resource not found for '{0}' (checked .ico/.png/.jpg in Resources\)" -f $name)
+    return $null
 }
 Log-Prep "Resource Loader Ready"
 
@@ -121,6 +134,7 @@ try {
     $form.Size = New-Object Drawing.Size(550,750)
     $form.StartPosition = "CenterScreen"
     $form.BackColor = [System.Drawing.Color]::MediumPurple
+    $form.SuspendLayout()
     Log-Prep "Main Form Created"
 } catch {
     Write-Host "Step $currentStep failed: Form Creation Error - $_"
@@ -140,7 +154,7 @@ try {
     Write-Host "Step $currentStep failed: Title Label Error - $_"
 }
 
-# --- Icons and Labels ---
+# --- Icons ---
 $resources = @{
     ProgramIcon = @{Point=[Drawing.Point]::new(20,80); Resource="programdata"}
     OwnerIcon   = @{Point=[Drawing.Point]::new(20,230); Resource="owner"}
@@ -154,10 +168,11 @@ foreach ($key in $resources.Keys) {
         $pic = New-Object Windows.Forms.PictureBox
         $pic.SizeMode = 'AutoSize'
         $pic.Location = $resources[$key].Point
-        $pic.Image = Get-Resource $resources[$key].Resource
+        $img = Get-Resource $resources[$key].Resource
+        if ($img -ne $null) { $pic.Image = $img }
         if ($resources[$key].ContainsKey("Visible")) { $pic.Visible = $resources[$key].Visible }
         $form.Controls.Add($pic)
-        Set-Variable $key $pic
+        Set-Variable -Name $key -Value $pic -Scope Global
         Log-Prep ("PictureBox " + $key + " Added")
     } catch {
         Write-Host "Step $currentStep failed: PictureBox $key Error - $_"
@@ -209,7 +224,7 @@ foreach ($key in $labels.Keys) {
         $lbl.Location = $labels[$key].Point
         if ($labels[$key].ContainsKey("Visible")) { $lbl.Visible = $labels[$key].Visible }
         $form.Controls.Add($lbl)
-        Set-Variable ($key + "Label") $lbl
+        Set-Variable -Name ($key + "Label") -Value $lbl -Scope Global
         Log-Prep ("Label " + $key + " Added")
     } catch {
         Write-Host "Step $currentStep failed: Label $key Error - $_"
@@ -235,12 +250,27 @@ foreach ($field in $ownerFields.Keys) {
         Log-Prep ("Owner Label " + $field + " Added")
 
         $txt = New-Object Windows.Forms.TextBox
-        $txt.Text = (Get-ItemProperty -Path $regPath -Name $ownerFields[$field].Registry -ErrorAction SilentlyContinue).$($ownerFields[$field].Registry)
+        $existing = $null
+        try {
+            $existing = (Get-ItemProperty -Path $regPath -Name $ownerFields[$field].Registry -ErrorAction SilentlyContinue).$($ownerFields[$field].Registry)
+        } catch { $existing = $null }
+        if ($existing) { $txt.Text = $existing }
+
         $txt.Font = New-Object Drawing.Font("Segoe UI",12)
         $txt.Size = New-Object Drawing.Size(300,25)
         $txt.Location = New-Object Drawing.Point(150,$ownerFields[$field].Y)
-        $txt.Add_Leave({ Set-ItemProperty -Path $regPath -Name $ownerFields[$field].Registry -Value $txt.Text })
+
+        $reg = $regPath
+        $regName = $ownerFields[$field].Registry
+        $txt.Add_Leave({
+            try {
+                Set-ItemProperty -Path $reg -Name $regName -Value $txt.Text -Force
+            } catch {
+                Write-Host ("Failed saving {0} to registry: {1}" -f $regName, $_.Exception.Message)
+            }
+        })
         $form.Controls.Add($txt)
+        Set-Variable -Name ($field + "TextBox") -Value $txt -Scope Global
         Log-Prep ("Owner TextBox " + $field + " Added")
     } catch {
         Write-Host "Step $currentStep failed: Owner Field $field Error - $_"
@@ -249,11 +279,16 @@ foreach ($field in $ownerFields.Keys) {
 
 # --- Buttons ---
 try {
+    $buttonWidth = 140
+    $buttonHeight = 40
+    $bottomY = $form.ClientSize.Height - 80
+    $centerX = [int](($form.ClientSize.Width - $buttonWidth)/2)
+
     $mainButton = New-Object Windows.Forms.Button
     $mainButton.Text = $ButtonText
     $mainButton.BackColor = [System.Drawing.Color]::LightSkyBlue
-    $mainButton.Size = New-Object Drawing.Size(140,40)
-    $mainButton.Location = New-Object Drawing.Point([int](($form.ClientSize.Width-140)/2), $form.ClientSize.Height-80)
+    $mainButton.Size = New-Object Drawing.Size($buttonWidth,$buttonHeight)
+    $mainButton.Location = New-Object Drawing.Point($centerX,$bottomY)
     $mainButton.Add_Click({ $form.Close() })
     $form.Controls.Add($mainButton)
     Log-Prep "Main Button Added"
@@ -269,9 +304,13 @@ try {
     $sysBtn.Location = New-Object Drawing.Point(20,635)
     $sysBtn.BackColor = [System.Drawing.Color]::Red
     $sysBtn.Add_Click({
-        $newState = -not $SystemLabel.Visible
-        $SystemLabel.Visible = $newState
-        $SystemIcon.Visible = $newState
+        try {
+            $newState = -not $SystemLabel.Visible
+            $SystemLabel.Visible = $newState
+            $SystemIcon.Visible = $newState
+        } catch {
+            Write-Host "Toggle system specs failed: $_"
+        }
     })
     $form.Controls.Add($sysBtn)
     Log-Prep "System Toggle Button Added"
@@ -287,9 +326,13 @@ try {
     $licBtn.Location = New-Object Drawing.Point(400,635)
     $licBtn.BackColor = [System.Drawing.Color]::Green
     $licBtn.Add_Click({
-        $newState = -not $LicenseLabel.Visible
-        $LicenseLabel.Visible = $newState
-        $LicenseIcon.Visible = $newState
+        try {
+            $newState = -not $LicenseLabel.Visible
+            $LicenseLabel.Visible = $newState
+            $LicenseIcon.Visible = $newState
+        } catch {
+            Write-Host "Toggle license failed: $_"
+        }
     })
     $form.Controls.Add($licBtn)
     Log-Prep "License Toggle Button Added"
@@ -299,6 +342,7 @@ try {
 
 # --- Show Form ---
 try {
+    $form.ResumeLayout()
     [void]$form.ShowDialog()
     Log-Prep "GUI Displayed - Everything Loaded"
 } catch {
