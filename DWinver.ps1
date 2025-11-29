@@ -19,44 +19,23 @@ function Log-Error([string]$name, [string]$msg) {
 }
 
 # ==============================
-# Safe CIM helper (prevents long blocking calls)
-# Runs Get-CimInstance inside a job with a timeout and returns the object or $null
+# 2) Gather System Specs (simple + debugger safe)
 # ==============================
-function Safe-GetCim {
-    param(
-        [string]$ClassName,
-        [int]$TimeoutSeconds = 5
-    )
-    try {
-        $job = Start-Job -ScriptBlock {
-            param($cn)
-            try {
-                # Use Get-CimInstance; -ErrorAction Stop to throw on failures
-                Get-CimInstance -ClassName $cn -ErrorAction Stop
-            } catch {
-                # bubble the error as output
-                Write-Output ($null)
-            }
-        } -ArgumentList $ClassName
+try {
+    $osObj  = Get-WmiObject -Class Win32_OperatingSystem -ErrorAction SilentlyContinue
+    $cpuObj = Get-WmiObject -Class Win32_Processor        -ErrorAction SilentlyContinue
+    $csObj  = Get-WmiObject -Class Win32_ComputerSystem   -ErrorAction SilentlyContinue
 
-        $finished = Wait-Job -Job $job -Timeout $TimeoutSeconds
-        if (-not $finished) {
-            # timed out
-            Stop-Job -Job $job -Force -ErrorAction SilentlyContinue
-            Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
-            return $null
-        }
-        $result = Receive-Job -Job $job -ErrorAction SilentlyContinue
-        Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
-        return $result
-    } catch {
-        # If job-based approach fails, fall back to direct call with try/catch
-        try {
-            return Get-CimInstance -ClassName $ClassName -ErrorAction Stop
-        } catch {
-            return $null
-        }
-    }
+    $OS  = if ($osObj.Caption) { $osObj.Caption } else { "Unknown OS" }
+    $CPU = if ($cpuObj.Name)   { $cpuObj.Name }   else { "Unknown CPU" }
+    $RAM = if ($csObj.TotalPhysicalMemory) {
+        "{0:N2} GB" -f ($csObj.TotalPhysicalMemory / 1GB)
+    } else { "Unknown RAM" }
+
+    Log-Prep "System Specs Gathered"
+} catch {
+    Log-Error "System Specs" $_.Exception.Message
+    $OS="Unknown OS"; $CPU="Unknown CPU"; $RAM="Unknown RAM"
 }
 
 # ==============================
