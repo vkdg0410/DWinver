@@ -85,13 +85,6 @@ try {
 }
 
 # ==============================
-# (Removed) Compiled assembly Add-Type - EXE cannot be loaded
-# ==============================
-# We intentionally do NOT call Add-Type on an .exe — that was failing.
-# If you need to load a DLL, call Add-Type -Path 'path\to.dll' instead.
-Log-Prep "Skipped invalid EXE Add-Type (not required)"
-
-# ==============================
 # Resource Loader (loads files from Resources\ folder)
 # ==============================
 function Get-Resource([string]$name) {
