@@ -60,11 +60,27 @@ try {
 # Registry Setup
 # ==============================
 try {
-    $regPath = "HKCU:\Software\DWindows"
-    If (-not (Test-Path $regPath)) { New-Item -Path $regPath | Out-Null }
-    Log-Prep "Registry Path Initialized"
-} catch {
-    Write-Host "Step $currentStep failed: Registry Setup Error - $_"
+    Log-Prep "Step $currentStep: Getting OS name..."
+    $OS = (Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction Stop).Caption
+
+    Log-Prep "Step $currentStep: Getting CPU info..."
+    $cpuInfo = Get-CimInstance -ClassName Win32_Processor -ErrorAction Stop
+    if ($cpuInfo -and $cpuInfo.Name) {
+        $CPU = $cpuInfo.Name
+    } else {
+        $CPU = "Unknown CPU (CIM returned empty)"
+        Log-Prep "Step $currentStep: CPU info incomplete — using fallback."
+    }
+
+    Log-Prep "Step $currentStep: Getting RAM..."
+    $cs = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction Stop
+    $RAM = "{0:N2} GB" -f ($cs.TotalPhysicalMemory / 1GB)
+
+    Log-Prep "Step $currentStep: System Specs Gathered Successfully"
+}
+catch {
+    $msg = $_.Exception.Message
+    Log-Prep "ERROR in Step $currentStep: $msg"
 }
 
 # ==============================
