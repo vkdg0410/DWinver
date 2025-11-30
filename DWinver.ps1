@@ -316,7 +316,7 @@ try {
     $sysBtn = New-Object System.Windows.Forms.Button
     $sysBtn.Text = "System Specs"
     $sysBtn.Size = New-Object System.Drawing.Size(110,30)
-    $sysBtn.Location = New-Object System.Drawing.Point(20,700)
+    $sysBtn.Location = New-Object System.Drawing.Point(20,560)
     $sysBtn.BackColor = [System.Drawing.Color]::IndianRed
     $sysBtn.Add_Click({
         try {
@@ -333,7 +333,7 @@ try {
     $licBtn = New-Object System.Windows.Forms.Button
     $licBtn.Text = "License"
     $licBtn.Size = New-Object System.Drawing.Size(110,30)
-    $licBtn.Location = New-Object System.Drawing.Point(420,700)
+    $licBtn.Location = New-Object System.Drawing.Point(420,560)
     $licBtn.BackColor = [System.Drawing.Color]::SeaGreen
     $licBtn.Add_Click({
         try {
