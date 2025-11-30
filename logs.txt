@@ -1,38 +1,60 @@
 PS C:\Users\vagvo\source\repos\DWinver But PSWorking> C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1
-[13:38:59] Step 1/30: Prepared System Specs Gathered
-[13:39:00] Step 2/30: Prepared GUI Assembly Types Loaded
-[13:39:00] ERROR during System Specs: The term 'Safe-GetCim' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
-[13:39:00] Step 3/30: Prepared Software Info Initialized
-[13:39:00] Step 4/30: Prepared Support and Owner Info Initialized
-[13:39:00] Step 5/30: Prepared Registry Path Initialized
-[13:39:00] Step 6/30: Prepared Resource Loader Ready
-[13:39:01] Step 7/30: Prepared Main Form Created
-[13:39:01] Step 8/30: Prepared Title Label Added
-[13:39:01] ERROR during PictureBox OwnerIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
-[13:39:01] ERROR during PictureBox SupportIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
-[13:39:01] ERROR during PictureBox ProgramIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
-[13:39:01] ERROR during PictureBox LicenseIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
-[13:39:01] ERROR during PictureBox SystemIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
-[13:39:01] Step 9/30: Prepared Label License Added
-[13:39:01] Step 10/30: Prepared Label Support Added
-[13:39:01] Step 11/30: Prepared Label Software Added
-[13:39:01] Step 12/30: Prepared Label Owner Added
-[13:39:01] Step 13/30: Prepared Label System Added
-[13:39:01] Step 14/30: Prepared Owner Label Email Added
-[13:39:01] Step 15/30: Prepared Owner TextBox Email Added
-[13:39:01] Step 16/30: Prepared Owner Label Name Added
-[13:39:01] Step 17/30: Prepared Owner TextBox Name Added
-[13:39:01] Step 18/30: Prepared Owner Label Phone Added
-[13:39:01] Step 19/30: Prepared Owner TextBox Phone Added
-[13:39:01] Step 20/30: Prepared Main Button Added
-[13:39:01] Step 21/30: Prepared System Toggle Button Added
-[13:39:01] Step 22/30: Prepared License Toggle Button Added
-Toggle system specs failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
-Toggle system specs failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
-Toggle license failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
-Toggle license failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
-Toggle system specs failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
-Toggle system specs failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
-Toggle license failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
-Toggle license failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
-[13:39:45] Step 23/30: Prepared GUI Displayed - Everything Loaded
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:84 char:49
+[ERROR] +     $Copyright    = "Â© Copyright Dev Setup â€” All Rats Reserved!"
+[ERROR] +                                                 ~~~
+[ERROR] Unexpected token 'All' in expression or statement.
+[ERROR] 
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:92 char:24
+[ERROR] +     Log-Prep "Metadata & support initialized"
+[ERROR] +                        ~
+[ERROR] The ampersand (&) character is not allowed. The & operator is reserved for futu
+[ERROR] re use; wrap an ampersand in double quotation marks ("&") to pass it as part of
+[ERROR]  a string.
+[ERROR] 
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:195 char:4
+[ERROR] + --- Software Information ---
+[ERROR] +    ~
+[ERROR] Missing expression after unary operator '-'.
+[ERROR] 
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:195 char:5
+[ERROR] + --- Software Information ---
+[ERROR] +     ~~~~~~~~
+[ERROR] Unexpected token 'Software' in expression or statement.
+[ERROR] 
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:204 char:4
+[ERROR] + --- Owner Information ---
+[ERROR] +    ~
+[ERROR] Missing expression after unary operator '-'.
+[ERROR] 
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:204 char:5
+[ERROR] + --- Owner Information ---
+[ERROR] +     ~~~~~
+[ERROR] Unexpected token 'Owner' in expression or statement.
+[ERROR] 
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:209 char:4
+[ERROR] + --- Support Information ---
+[ERROR] +    ~
+[ERROR] Missing expression after unary operator '-'.
+[ERROR] 
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:209 char:5
+[ERROR] + --- Support Information ---
+[ERROR] +     ~~~~~~~
+[ERROR] Unexpected token 'Support' in expression or statement.
+[ERROR] 
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:216 char:4
+[ERROR] + --- System Specs ---
+[ERROR] +    ~
+[ERROR] Missing expression after unary operator '-'.
+[ERROR] 
+[ERROR] At C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1:216 char:5
+[ERROR] + --- System Specs ---
+[ERROR] +     ~~~~~~
+[ERROR] Unexpected token 'System' in expression or statement.
+[ERROR] 
+[ERROR] Not all parse errors were reported.  Correct the reported errors and try again.
+[ERROR]     + CategoryInfo          : ParserError: (:) [], ParseException
+[ERROR]     + FullyQualifiedErrorId : UnexpectedToken
+[ERROR]  
+
+[ERROR] Developer has lost his sanity now...
+[WARNING] Developer is experiencing a mental illness! Proceed with caution!
