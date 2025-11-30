@@ -69,6 +69,7 @@ try {
 # Crimes
 
 # Every time I have to debug this cuz it's broken the Geneva suggestions flash before my eyes, and I want to paste them in right here!
+# <ChatGPT> - Note: It's not bugs, it's Rats 🐀 and some Fish 🐟! That's all! :)
 
 # ==============================
 # 3) Metadata & owner/support
