@@ -81,7 +81,7 @@ try {
     $Author       = "Dev0630"
     $ReleaseDate  = "October 1, 2024"
     $Description  = "Fish"
-    $Copyright    = "© Copyright Dev Setup — All Rats Reserved!"
+    $Copyright    = "© Copyright Dev Setup - All Rats Reserved!"
     $ButtonText   = "I Rat it!"
     $ComputerName = $env:COMPUTERNAME
     $License      = "Product keys will come out in V-3.0!"
