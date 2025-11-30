@@ -89,7 +89,8 @@ try {
 } catch {
     Log-Error "System Specs" $_.Exception.Message
 }
-#tswiwtcwc
+#TSWIWTCWC
+
 #This
 #Section
 #Makes
@@ -98,6 +99,8 @@ try {
 #Commit
 #War
 #Crimes
+
+#When I have to debug this cuz it doesn't work, the Geneva suggestions flash before my eyes and I actually wanna pste them in right here!
 
 # 3) Software metadata
 try {
