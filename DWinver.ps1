@@ -146,7 +146,7 @@ Log-Prep "Resource loader ready"
 try {
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "About DWindows"
-    $form.Size = New-Object System.Drawing.Size(500,800)
+    $form.Size = New-Object System.Drawing.Size(560,750)
     $form.StartPosition = "CenterScreen"
     $form.BackColor = [System.Drawing.Color]::MediumPurple
     $form.Font = New-Object System.Drawing.Font("Segoe UI",10)
