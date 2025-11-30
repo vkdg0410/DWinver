@@ -89,7 +89,7 @@ try {
     $SupportCompany = "Dev Setup"
     $SupportEmail   = "vkdg0410@gmail.com"
     $SupportPhone   = "+36204927891"
-    Log-Prep "Metadata & support initialized"
+    Log-Prep "Metadata '& support initialized"
 } catch {
     Log-Error "Metadata init" $_.Exception.Message
 }
