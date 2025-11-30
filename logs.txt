@@ -1,33 +1,38 @@
 PS C:\Users\vagvo\source\repos\DWinver But PSWorking> C:\Users\vagvo\source\repos\DWinver But PSWorking\DWinver.ps1
-Step 1/20: Prepared GUI Assembly Types Loaded
-Step 2/20: Prepared Software Info Initialized
-Step 3/20: Prepared Support and Owner Info Initialized
-Step 4/20: Prepared Registry Path Initialized
-Step 4 failed: Compiled Assembly Load Error - Cannot add type. The ".EXE" extension is not supported.
-Step 5/20: Prepared Resource Loader Ready
-Step 6/20: Prepared Main Form Created
-Step 7/20: Prepared Title Label Added
-Step 7 failed: Resource Load Error for owner - Unable to find type [DWinver.Properties.Resources].
-Step 8/20: Prepared PictureBox OwnerIcon Added
-Step 8 failed: Resource Load Error for support - Unable to find type [DWinver.Properties.Resources].
-Step 9/20: Prepared PictureBox SupportIcon Added
-Step 9 failed: Resource Load Error for programdata - Unable to find type [DWinver.Properties.Resources].
-Step 10/20: Prepared PictureBox ProgramIcon Added
-Step 10 failed: Resource Load Error for license - Unable to find type [DWinver.Properties.Resources].
-Step 11/20: Prepared PictureBox LicenseIcon Added
-Step 11 failed: Resource Load Error for systeminfo - Unable to find type [DWinver.Properties.Resources].
-Step 12/20: Prepared PictureBox SystemIcon Added
-Step 13/20: Prepared Label License Added
-Step 14/20: Prepared Label Support Added
-Step 15/20: Prepared Label Software Added
-Step 16/20: Prepared Label Owner Added
-Step 17/20: Prepared Label System Added
-Step 18/20: Prepared Owner Label Email Added
-Step 19/20: Prepared Owner TextBox Email Added
-Step 20/20: Prepared Owner Label Name Added
-Step 21/20: Prepared Owner TextBox Name Added
-Step 22/20: Prepared Owner Label Phone Added
-Step 23/20: Prepared Owner TextBox Phone Added
-Step 23 failed: Main Button Error - Method invocation failed because [System.Object[]] does not contain a method named 'op_Subtraction'.
-Step 24/20: Prepared System Toggle Button Added
-Step 25/20: Prepared License Toggle Button Added
+[13:38:59] Step 1/30: Prepared System Specs Gathered
+[13:39:00] Step 2/30: Prepared GUI Assembly Types Loaded
+[13:39:00] ERROR during System Specs: The term 'Safe-GetCim' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+[13:39:00] Step 3/30: Prepared Software Info Initialized
+[13:39:00] Step 4/30: Prepared Support and Owner Info Initialized
+[13:39:00] Step 5/30: Prepared Registry Path Initialized
+[13:39:00] Step 6/30: Prepared Resource Loader Ready
+[13:39:01] Step 7/30: Prepared Main Form Created
+[13:39:01] Step 8/30: Prepared Title Label Added
+[13:39:01] ERROR during PictureBox OwnerIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
+[13:39:01] ERROR during PictureBox SupportIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
+[13:39:01] ERROR during PictureBox ProgramIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
+[13:39:01] ERROR during PictureBox LicenseIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
+[13:39:01] ERROR during PictureBox SystemIcon: Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'ChildPath'. A megadott metódus használata nem támogatott.
+[13:39:01] Step 9/30: Prepared Label License Added
+[13:39:01] Step 10/30: Prepared Label Support Added
+[13:39:01] Step 11/30: Prepared Label Software Added
+[13:39:01] Step 12/30: Prepared Label Owner Added
+[13:39:01] Step 13/30: Prepared Label System Added
+[13:39:01] Step 14/30: Prepared Owner Label Email Added
+[13:39:01] Step 15/30: Prepared Owner TextBox Email Added
+[13:39:01] Step 16/30: Prepared Owner Label Name Added
+[13:39:01] Step 17/30: Prepared Owner TextBox Name Added
+[13:39:01] Step 18/30: Prepared Owner Label Phone Added
+[13:39:01] Step 19/30: Prepared Owner TextBox Phone Added
+[13:39:01] Step 20/30: Prepared Main Button Added
+[13:39:01] Step 21/30: Prepared System Toggle Button Added
+[13:39:01] Step 22/30: Prepared License Toggle Button Added
+Toggle system specs failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
+Toggle system specs failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
+Toggle license failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
+Toggle license failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
+Toggle system specs failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
+Toggle system specs failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
+Toggle license failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
+Toggle license failed: The property 'Visible' cannot be found on this object. Verify that the property exists and can be set.
+[13:39:45] Step 23/30: Prepared GUI Displayed - Everything Loaded
