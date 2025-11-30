@@ -156,18 +156,18 @@ try {
     Log-Error "Form create" $_.Exception.Message
 }
 
-# on-form log textbox (bottom)
-$logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Multiline = $true
-$logBox.ReadOnly = $true
-$logBox.ScrollBars = "Vertical"
-$logBox.Size = New-Object System.Drawing.Size(520,140)
-$logBox.Location = New-Object System.Drawing.Point(20,620)
-$logBox.BackColor = [System.Drawing.Color]::WhiteSmoke
-# expose globally so Log-Prep can append
-Set-Variable -Name logBox -Value $logBox -Scope Global
-$form.Controls.Add($logBox)
-Log-Prep "On-form log box added"
+## on-form log textbox (bottom)
+#$logBox = New-Object System.Windows.Forms.TextBox
+#$logBox.Multiline = $true
+#$logBox.ReadOnly = $true
+#$logBox.ScrollBars = "Vertical"
+#$logBox.Size = New-Object System.Drawing.Size(520,140)
+#$logBox.Location = New-Object System.Drawing.Point(20,620)
+#$logBox.BackColor = [System.Drawing.Color]::WhiteSmoke
+## expose globally so Log-Prep can append
+#Set-Variable -Name logBox -Value $logBox -Scope Global
+#$form.Controls.Add($logBox)
+#Log-Prep "On-form log box added"
 
 # Title
 $titleLabel = New-Object System.Windows.Forms.Label
