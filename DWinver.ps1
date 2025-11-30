@@ -89,6 +89,15 @@ try {
 } catch {
     Log-Error "System Specs" $_.Exception.Message
 }
+#tswiwtcwc
+#This
+#Section
+#Makes
+#Me
+#Wanna
+#Commit
+#War
+#Crimes
 
 # 3) Software metadata
 try {
