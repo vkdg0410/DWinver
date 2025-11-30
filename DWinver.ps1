@@ -1,3 +1,5 @@
+# DWinver.ps1 - I hope this works now because the message is true.
+
 # ==============================
 # Config
 # ==============================
@@ -54,6 +56,19 @@ try {
     Log-Error "System specs" $_.Exception.Message
     $OS="Unknown OS"; $CPU="Unknown CPU"; $RAM="Unknown RAM"
 }
+
+# TSWIWTCWC
+
+# This
+# Section
+# Makes
+# Me
+# Wanna
+# Commit
+# War
+# Crimes
+
+# Every time I have to debug this cuz it's broken the Geneva suggestions flash before my eyes and I want to paste them in right here!
 
 # ==============================
 # 3) Metadata & owner/support
