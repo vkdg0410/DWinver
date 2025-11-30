@@ -1,108 +1,63 @@
-# DWinver.ps1 — Fixed & hardened version (system-specs safe, resource loader, registry, step logs)
-# Replace your existing DWinver.ps1 with this file.
-
 # ==============================
-# Step Counter Setup
+# Config
 # ==============================
-$totalSteps = 30
+$totalSteps = 26
 $currentStep = 0
-function Log-Prep([string]$name) {
+
+function Log-Prep([string]$msg) {
     $global:currentStep++
-    # Time prefix helps spotting where things hang
     $time = (Get-Date).ToString("HH:mm:ss")
-    Write-Host ("[{0}] Step {1}/{2}: Prepared {3}" -f $time, $global:currentStep, $totalSteps, $name)
+    $line = ("[{0}] Step {1}/{2}: {3}" -f $time, $global:currentStep, $totalSteps, $msg)
+    Write-Host $line
+    # append to on-form log if present
+    if ($null -ne $global:logBox -and $global:logBox -is [System.Windows.Forms.TextBox]) {
+        try {
+            $global:logBox.AppendText($line + [Environment]::NewLine) | Out-Null
+        } catch { }
+    }
 }
 
-function Log-Error([string]$name, [string]$msg) {
+function Log-Error([string]$where, [string]$msg) {
     $time = (Get-Date).ToString("HH:mm:ss")
-    Write-Host ("[{0}] ERROR during {1}: {2}" -f $time, $name, $msg)
+    $line = ("[{0}] ERROR in {1}: {2}" -f $time, $where, $msg)
+    Write-Host $line
+    if ($null -ne $global:logBox -and $global:logBox -is [System.Windows.Forms.TextBox]) {
+        try { $global:logBox.AppendText($line + [Environment]::NewLine) | Out-Null } catch {}
+    }
 }
 
 # ==============================
-# 2) Gather System Specs (simple + debugger safe)
+# 1) Load WinForms/Drawing
 # ==============================
 try {
-    $osObj  = Get-WmiObject -Class Win32_OperatingSystem -ErrorAction SilentlyContinue
+    Add-Type -AssemblyName System.Windows.Forms
+    Add-Type -AssemblyName System.Drawing
+    Log-Prep "GUI assemblies loaded"
+} catch {
+    Log-Error "Assembly load" $_.Exception.Message
+}
+
+# ==============================
+# 2) System specs (WMI, debugger-safe)
+# ==============================
+try {
+    $osObj  = Get-WmiObject -Class Win32_OperatingSystem  -ErrorAction SilentlyContinue
     $cpuObj = Get-WmiObject -Class Win32_Processor        -ErrorAction SilentlyContinue
     $csObj  = Get-WmiObject -Class Win32_ComputerSystem   -ErrorAction SilentlyContinue
 
-    $OS  = if ($osObj.Caption) { $osObj.Caption } else { "Unknown OS" }
-    $CPU = if ($cpuObj.Name)   { $cpuObj.Name }   else { "Unknown CPU" }
-    $RAM = if ($csObj.TotalPhysicalMemory) {
-        "{0:N2} GB" -f ($csObj.TotalPhysicalMemory / 1GB)
-    } else { "Unknown RAM" }
+    $OS  = if ($osObj -and $osObj.Caption) { $osObj.Caption } else { "Unknown OS" }
+    $CPU = if ($cpuObj -and $cpuObj.Name)   { $cpuObj.Name }   else { "Unknown CPU" }
+    $RAM = if ($csObj -and $csObj.TotalPhysicalMemory) { "{0:N2} GB" -f ($csObj.TotalPhysicalMemory / 1GB) } else { "Unknown RAM" }
 
-    Log-Prep "System Specs Gathered"
+    Log-Prep "System specs gathered"
 } catch {
-    Log-Error "System Specs" $_.Exception.Message
+    Log-Error "System specs" $_.Exception.Message
     $OS="Unknown OS"; $CPU="Unknown CPU"; $RAM="Unknown RAM"
 }
 
 # ==============================
-# BEGIN Initialization
+# 3) Metadata & owner/support
 # ==============================
-$DWinver_Load = { }
-
-# 1) Load WinForms + Drawing
-try {
-    Add-Type -AssemblyName System.Windows.Forms
-    Add-Type -AssemblyName System.Drawing
-    Log-Prep "GUI Assembly Types Loaded"
-} catch {
-    Log-Error "GUI Assembly Types Load" $_.Exception.Message
-}
-
-# 2) Gather System Specs (safe, non-blocking)
-try {
-    $OS = "Unknown OS"
-    $CPU = "Unknown CPU"
-    $RAM = "Unknown RAM"
-
-    $osObj = Safe-GetCim -ClassName "Win32_OperatingSystem" -TimeoutSeconds 4
-    if ($osObj -ne $null) {
-        # Get-CimInstance returns a collection — pick first relevant
-        if ($osObj -is [System.Array]) { $osObj = $osObj[0] }
-        if ($osObj -and $osObj.Caption) { $OS = $osObj.Caption }
-    } else {
-        Log-Prep "Get-CimInstance Win32_OperatingSystem timed out or returned nothing"
-    }
-
-    $cpuObj = Safe-GetCim -ClassName "Win32_Processor" -TimeoutSeconds 4
-    if ($cpuObj -ne $null) {
-        if ($cpuObj -is [System.Array]) { $cpuObj = $cpuObj[0] }
-        if ($cpuObj -and $cpuObj.Name) { $CPU = $cpuObj.Name }
-    } else {
-        Log-Prep "Get-CimInstance Win32_Processor timed out or returned nothing"
-    }
-
-    $csObj = Safe-GetCim -ClassName "Win32_ComputerSystem" -TimeoutSeconds 4
-    if ($csObj -ne $null) {
-        if ($csObj -is [System.Array]) { $csObj = $csObj[0] }
-        if ($csObj -and $csObj.TotalPhysicalMemory) {
-            $RAM = "{0:N2} GB" -f ($csObj.TotalPhysicalMemory / 1GB)
-        }
-    } else {
-        Log-Prep "Get-CimInstance Win32_ComputerSystem timed out or returned nothing"
-    }
-
-    Log-Prep "System Specs Gathered"
-} catch {
-    Log-Error "System Specs" $_.Exception.Message
-}
-#TSWIWTCWC
-
-#This
-#Section
-#Makes
-#Me
-#Wanna
-#Commit
-#War
-#Crimes
-
-#When I have to debug this cuz it doesn't work, the Geneva suggestions flash before my eyes and I actually wanna pste them in right here!
-
-# 3) Software metadata
 try {
     $AppName      = "D" + $OS
     $Version      = "DWinVer 2.0"
@@ -110,132 +65,117 @@ try {
     $Author       = "Dev0630"
     $ReleaseDate  = "October 1, 2024"
     $Description  = "Fish"
-    $Copyright    = "© Copyright Dev Setup All Rats reserved!"
+    $Copyright    = "© Copyright Dev Setup — All Rats Reserved!"
     $ButtonText   = "I Rat it!"
-    Log-Prep "Software Info Initialized"
-} catch {
-    Log-Error "Software Info Init" $_.Exception.Message
-}
-
-# 4) Owner/support info
-try {
     $ComputerName = $env:COMPUTERNAME
     $License      = "Product keys will come out in V-3.0!"
     $SupportName    = "Vagvolgyi-Krucso David Gabor"
     $SupportCompany = "Dev Setup"
     $SupportEmail   = "vkdg0410@gmail.com"
     $SupportPhone   = "+36204927891"
-    Log-Prep "Support and Owner Info Initialized"
+    Log-Prep "Metadata & support initialized"
 } catch {
-    Log-Error "Owner/Support Init" $_.Exception.Message
+    Log-Error "Metadata init" $_.Exception.Message
 }
 
-# 5) Registry path (ensure exists)
+# ==============================
+# 4) Registry path
+# ==============================
 try {
     $regPath = "HKCU:\Software\DWinver"
-    if (-not (Test-Path $regPath)) {
-        New-Item -Path $regPath -Force | Out-Null
-    }
-    Log-Prep "Registry Path Initialized"
+    if (-not (Test-Path $regPath)) { New-Item -Path $regPath -Force | Out-Null }
+    Log-Prep "Registry path ensured: $regPath"
 } catch {
-    Log-Error "Registry Setup" $_.Exception.Message
+    Log-Error "Registry" $_.Exception.Message
 }
 
-# 6) Resource loader (from Resources\ folder)
-function Get-Resource([string]$name) {
-    $candidates = @(
-        Join-Path $PSScriptRoot "Resources\$name.ico",
-        Join-Path $PSScriptRoot "Resources\$name.png",
-        Join-Path $PSScriptRoot "Resources\$name.jpg"
+# ==============================
+# 5) Resource loader (safe)
+# ==============================
+function Get-ResourceImage([string]$name) {
+    # look for explicit files; avoid passing arrays into Join-Path
+    $base = $PSScriptRoot
+    $paths = @(
+        "$base\Resources\$name.ico",
+        "$base\Resources\$name.png",
+        "$base\Resources\$name.jpg"
     )
-    foreach ($path in $candidates) {
-        if (Test-Path $path) {
+    foreach ($p in $paths) {
+        if (Test-Path $p) {
             try {
-                $ext = [System.IO.Path]::GetExtension($path).ToLowerInvariant()
+                $ext = [System.IO.Path]::GetExtension($p).ToLowerInvariant()
                 if ($ext -eq ".ico") {
-                    # ICO -> Icon object -> ToBitmap for PictureBox.Image
                     try {
-                        $icon = New-Object System.Drawing.Icon($path)
-                        return $icon.ToBitmap()
+                        $ic = New-Object System.Drawing.Icon($p)
+                        return $ic.ToBitmap()
                     } catch {
-                        return [System.Drawing.Image]::FromFile($path)
+                        return [System.Drawing.Image]::FromFile($p)
                     }
                 } else {
-                    return [System.Drawing.Image]::FromFile($path)
+                    return [System.Drawing.Image]::FromFile($p)
                 }
             } catch {
-                Log-Error ("Resource load for $path") $_.Exception.Message
+                Log-Error "Get-ResourceImage" $_.Exception.Message
                 return $null
             }
         }
     }
-    # not found
     return $null
 }
-Log-Prep "Resource Loader Ready"
+Log-Prep "Resource loader ready"
 
-# 7) Create main form
+# ==============================
+# 6) Build Form (layout + log box)
+# ==============================
 try {
-    $form = New-Object Windows.Forms.Form
+    $form = New-Object System.Windows.Forms.Form
     $form.Text = "About DWindows"
-    $form.Size = New-Object Drawing.Size(550,750)
+    $form.Size = New-Object System.Drawing.Size(560,800)
     $form.StartPosition = "CenterScreen"
     $form.BackColor = [System.Drawing.Color]::MediumPurple
+    $form.Font = New-Object System.Drawing.Font("Segoe UI",10)
     $form.SuspendLayout()
-    Log-Prep "Main Form Created"
+    Log-Prep "Form created"
 } catch {
-    Log-Error "Form Creation" $_.Exception.Message
+    Log-Error "Form create" $_.Exception.Message
 }
 
-# 8) Title
-try {
-    $titleLabel = New-Object Windows.Forms.Label
-    $titleLabel.Text = "About DWindows"
-    $titleLabel.ForeColor = [System.Drawing.Color]::White
-    $titleLabel.Font = New-Object Drawing.Font("Segoe UI",18,[Drawing.FontStyle]::Bold)
-    $titleLabel.AutoSize = $true
-    $titleLabel.Location = New-Object Drawing.Point(150,20)
-    $form.Controls.Add($titleLabel)
-    Log-Prep "Title Label Added"
-} catch {
-    Log-Error "Title Label" $_.Exception.Message
+# on-form log textbox (bottom)
+$logBox = New-Object System.Windows.Forms.TextBox
+$logBox.Multiline = $true
+$logBox.ReadOnly = $true
+$logBox.ScrollBars = "Vertical"
+$logBox.Size = New-Object System.Drawing.Size(520,140)
+$logBox.Location = New-Object System.Drawing.Point(20,620)
+$logBox.BackColor = [System.Drawing.Color]::WhiteSmoke
+# expose globally so Log-Prep can append
+Set-Variable -Name logBox -Value $logBox -Scope Global
+$form.Controls.Add($logBox)
+Log-Prep "On-form log box added"
+
+# Title
+$titleLabel = New-Object System.Windows.Forms.Label
+$titleLabel.Text = "About DWindows"
+$titleLabel.ForeColor = [System.Drawing.Color]::White
+$titleLabel.Font = New-Object System.Drawing.Font("Segoe UI",16,[System.Drawing.FontStyle]::Bold)
+$titleLabel.AutoSize = $true
+$titleLabel.Location = New-Object System.Drawing.Point(160,15)
+$form.Controls.Add($titleLabel)
+Log-Prep "Title added"
+
+# ==============================
+# Icons and labels data
+# ==============================
+$iconDefs = @{
+    ProgramIcon = @{X=20; Y=60; Name="programdata"}
+    OwnerIcon   = @{X=20; Y=200; Name="owner"}
+    SupportIcon = @{X=20; Y=340; Name="support"}
+    SystemIcon  = @{X=20; Y=460; Name="systeminfo"; Visible=$false}
+    LicenseIcon = @{X=20; Y=540; Name="license"; Visible=$false}
 }
 
-# 9-13) PictureBoxes (icons)
-$resources = @{
-    ProgramIcon = @{Point=[Drawing.Point]::new(20,80); Resource="programdata"}
-    OwnerIcon   = @{Point=[Drawing.Point]::new(20,230); Resource="owner"}
-    SupportIcon = @{Point=[Drawing.Point]::new(20,400); Resource="support"}
-    SystemIcon  = @{Point=[Drawing.Point]::new(20,510); Resource="systeminfo"; Visible=$false}
-    LicenseIcon = @{Point=[Drawing.Point]::new(20,560); Resource="license"; Visible=$false}
-}
-
-foreach ($key in $resources.Keys) {
-    try {
-        $pic = New-Object Windows.Forms.PictureBox
-        $pic.SizeMode = 'AutoSize'
-        $pic.Location = $resources[$key].Point
-        $img = Get-Resource $resources[$key].Resource
-        if ($img -ne $null) { $pic.Image = $img } else { 
-            # optional: use a simple placeholder bitmap when missing
-            $bmp = New-Object System.Drawing.Bitmap 32,32
-            $g = [System.Drawing.Graphics]::FromImage($bmp)
-            $g.Clear([System.Drawing.Color]::Transparent)
-            $g.Dispose()
-            $pic.Image = $bmp
-        }
-        if ($resources[$key].ContainsKey("Visible")) { $pic.Visible = $resources[$key].Visible }
-        $form.Controls.Add($pic)
-        Set-Variable -Name $key -Value $pic -Scope Global
-        Log-Prep ("PictureBox " + $key + " Added")
-    } catch {
-        Log-Error ("PictureBox " + $key) $_.Exception.Message
-    }
-}
-
-# 14-18) Labels
-$labels = @{
-    Software    = @{Text=@"
+$labelDefs = @{
+    Software = @{X=90; Y=60; Text = @"
 --- Software Information ---
 $AppName
 $Version
@@ -243,165 +183,158 @@ $Company
 $ReleaseDate
 $Description
 $Copyright
-"@; Point=[Drawing.Point]::new(50,80)}
-    Owner       = @{Text=@"
+"@}
+    Owner = @{X=90; Y=200; Text = @"
 --- Owner Information ---
 Computer: $ComputerName
 Username: $env:USERNAME
-"@; Point=[Drawing.Point]::new(50,230)}
-    Support     = @{Text=@"
+"@}
+    Support = @{X=90; Y=340; Text = @"
 --- Support Information ---
 Name: $SupportName
 Company: $SupportCompany
 Email: $SupportEmail
 Phone: $SupportPhone
-"@; Point=[Drawing.Point]::new(50,400)}
-    System      = @{Text=@"
+"@}
+    System = @{X=90; Y=460; Text = @"
 --- System Specs ---
 OS: $OS
 CPU: $CPU
 RAM: $RAM
-"@; Point=[Drawing.Point]::new(50,510); Visible=$false}
-    License     = @{Text=@"
+"@; Visible = $false}
+    License = @{X=90; Y=540; Text = @"
 --- License ---
 $License
-"@; Point=[Drawing.Point]::new(50,560); Visible=$false}
+"@; Visible = $false}
 }
 
-foreach ($key in $labels.Keys) {
+# create pictureboxes (safe)
+foreach ($k in $iconDefs.Keys) {
     try {
-        $lbl = New-Object Windows.Forms.Label
-        $lbl.Text = $labels[$key].Text
-        $lbl.ForeColor = [System.Drawing.Color]::White
-        $lbl.Font = New-Object Drawing.Font("Segoe UI",12,[Drawing.FontStyle]::Bold)
-        $lbl.AutoSize = $true
-        $lbl.Location = $labels[$key].Point
-        if ($labels[$key].ContainsKey("Visible")) { $lbl.Visible = $labels[$key].Visible }
-        $form.Controls.Add($lbl)
-        Set-Variable -Name ($key + "Label") -Value $lbl -Scope Global
-        Log-Prep ("Label " + $key + " Added")
+        $def = $iconDefs[$k]
+        $pb = New-Object System.Windows.Forms.PictureBox
+        $pb.SizeMode = 'AutoSize'
+        $pb.Location = New-Object System.Drawing.Point($def.X, $def.Y)
+        $img = Get-ResourceImage $def.Name
+        if ($img -ne $null) { $pb.Image = $img } else {
+            # placeholder 32x32 transparent
+            $bmp = New-Object System.Drawing.Bitmap 32,32
+            $g = [System.Drawing.Graphics]::FromImage($bmp); $g.Clear([System.Drawing.Color]::Transparent); $g.Dispose()
+            $pb.Image = $bmp
+        }
+        if ($def.ContainsKey("Visible") -and -not $def.Visible) { $pb.Visible = $false } 
+        $form.Controls.Add($pb)
+        Set-Variable -Name $k -Value $pb -Scope Global
+        Log-Prep ("PictureBox " + $k + " added")
     } catch {
-        Log-Error ("Label " + $key) $_.Exception.Message
+        Log-Error ("PictureBox " + $k) $_.Exception.Message
     }
 }
 
-# 19-24) Owner editable fields (Label + TextBox each)
+# create labels
+foreach ($k in $labelDefs.Keys) {
+    try {
+        $def = $labelDefs[$k]
+        $lbl = New-Object System.Windows.Forms.Label
+        $lbl.Text = $def.Text
+        $lbl.ForeColor = [System.Drawing.Color]::White
+        $lbl.Font = New-Object System.Drawing.Font("Segoe UI",10,[System.Drawing.FontStyle]::Bold)
+        $lbl.AutoSize = $true
+        $lbl.Location = New-Object System.Drawing.Point($def.X, $def.Y)
+        if ($def.ContainsKey("Visible") -and -not $def.Visible) { $lbl.Visible = $false }
+        $form.Controls.Add($lbl)
+        Set-Variable -Name ($k + "Label") -Value $lbl -Scope Global
+        Log-Prep ("Label " + $k + " added")
+    } catch {
+        Log-Error ("Label " + $k) $_.Exception.Message
+    }
+}
+
+# owner editable fields
 $ownerFields = @{
-    Name  = @{Registry="OwnerName"; Y=300}
-    Email = @{Registry="OwnerEmail"; Y=335}
-    Phone = @{Registry="OwnerPhone"; Y=370}
+    Name  = @{Reg="OwnerName"; Y=300}
+    Email = @{Reg="OwnerEmail"; Y=335}
+    Phone = @{Reg="OwnerPhone"; Y=370}
 }
-
-foreach ($field in $ownerFields.Keys) {
+foreach ($f in $ownerFields.Keys) {
     try {
-        # Label
-        $lbl = New-Object Windows.Forms.Label
-        $lbl.Text = $field
+        $d = $ownerFields[$f]
+        $lbl = New-Object System.Windows.Forms.Label
+        $lbl.Text = $f
         $lbl.ForeColor = [System.Drawing.Color]::White
-        $lbl.Font = New-Object Drawing.Font("Segoe UI",12,[Drawing.FontStyle]::Bold)
-        $lbl.AutoSize = $true
-        $lbl.Location = New-Object Drawing.Point(50, $ownerFields[$field].Y)
+        $lbl.Location = New-Object System.Drawing.Point(50, $d.Y)
         $form.Controls.Add($lbl)
-        Log-Prep ("Owner Label " + $field + " Added")
 
-        # TextBox
-        $txt = New-Object Windows.Forms.TextBox
+        $txt = New-Object System.Windows.Forms.TextBox
         $existing = $null
-        try {
-            $existing = (Get-ItemProperty -Path $regPath -Name $ownerFields[$field].Registry -ErrorAction SilentlyContinue).$($ownerFields[$field].Registry)
-        } catch { $existing = $null }
+        try { $existing = (Get-ItemProperty -Path $regPath -Name $d.Reg -ErrorAction SilentlyContinue).$($d.Reg) } catch {}
         if ($existing) { $txt.Text = $existing }
+        $txt.Size = New-Object System.Drawing.Size(320,24)
+        $txt.Location = New-Object System.Drawing.Point(130, $d.Y - 3)
 
-        $txt.Font = New-Object Drawing.Font("Segoe UI",12)
-        $txt.Size = New-Object Drawing.Size(300,25)
-        $txt.Location = New-Object Drawing.Point(150,$ownerFields[$field].Y)
-
-        # Create closures safely by capturing current values
-        $captureReg = $regPath
-        $captureName = $ownerFields[$field].Registry
-        $txt.Add_Leave({
-            try {
-                Set-ItemProperty -Path $captureReg -Name $captureName -Value $txt.Text -Force
-            } catch {
-                Write-Host ("Failed saving {0} to registry: {1}" -f $captureName, $_.Exception.Message)
-            }
-        })
+        # capture for closure
+        $capReg = $regPath; $capName = $d.Reg
+        $txt.Add_Leave({ try { Set-ItemProperty -Path $capReg -Name $capName -Value $txt.Text -Force } catch { Log-Error "RegistrySave" $_.Exception.Message } })
         $form.Controls.Add($txt)
-        Set-Variable -Name ($field + "TextBox") -Value $txt -Scope Global
-        Log-Prep ("Owner TextBox " + $field + " Added")
+        Set-Variable -Name ($f + "TextBox") -Value $txt -Scope Global
+        Log-Prep ("Owner field " + $f + " added")
     } catch {
-        Log-Error ("Owner Field " + $field) $_.Exception.Message
+        Log-Error ("Owner field " + $f) $_.Exception.Message
     }
 }
 
-# 25) Main button
+# buttons (main + toggles)
 try {
-    $buttonWidth = 140
-    $buttonHeight = 40
-    $bottomY = $form.ClientSize.Height - 80
-    $centerX = [int](($form.ClientSize.Width - $buttonWidth)/2)
+    $btnMain = New-Object System.Windows.Forms.Button
+    $btnMain.Text = $ButtonText
+    $btnMain.Size = New-Object System.Drawing.Size(140,38)
+    $btnMain.Location = New-Object System.Drawing.Point(210,560)
+    $btnMain.BackColor = [System.Drawing.Color]::LightSkyBlue
+    $btnMain.Add_Click({ $form.Close() })
+    $form.Controls.Add($btnMain)
+    Log-Prep "Main button added"
+} catch { Log-Error "Main button" $_.Exception.Message }
 
-    $mainButton = New-Object Windows.Forms.Button
-    $mainButton.Text = $ButtonText
-    $mainButton.BackColor = [System.Drawing.Color]::LightSkyBlue
-    $mainButton.Size = New-Object Drawing.Size($buttonWidth,$buttonHeight)
-    $mainButton.Location = New-Object Drawing.Point($centerX,$bottomY)
-    $mainButton.Add_Click({ $form.Close() })
-    $form.Controls.Add($mainButton)
-    Log-Prep "Main Button Added"
-} catch {
-    Log-Error "Main Button" $_.Exception.Message
-}
-
-# 26) System Specs toggle
+# System toggle
 try {
-    $sysBtn = New-Object Windows.Forms.Button
+    $sysBtn = New-Object System.Windows.Forms.Button
     $sysBtn.Text = "System Specs"
-    $sysBtn.Size = New-Object Drawing.Size(120,35)
-    $sysBtn.Location = New-Object Drawing.Point(20,635)
-    $sysBtn.BackColor = [System.Drawing.Color]::Red
+    $sysBtn.Size = New-Object System.Drawing.Size(110,30)
+    $sysBtn.Location = New-Object System.Drawing.Point(20,700)
+    $sysBtn.BackColor = [System.Drawing.Color]::IndianRed
     $sysBtn.Add_Click({
         try {
-            $newState = -not $SystemLabel.Visible
-            $SystemLabel.Visible = $newState
-            $SystemIcon.Visible = $newState
-        } catch {
-            Write-Host "Toggle system specs failed: $_"
-        }
+            if ($null -ne $global:SystemLabel) { $global:SystemLabel.Visible = -not $global:SystemLabel.Visible }
+            if ($null -ne $global:SystemIcon)  { $global:SystemIcon.Visible  = -not $global:SystemIcon.Visible  }
+        } catch { Log-Error "SysToggle" $_.Exception.Message }
     })
     $form.Controls.Add($sysBtn)
-    Log-Prep "System Toggle Button Added"
-} catch {
-    Log-Error "System Toggle Button" $_.Exception.Message
-}
+    Log-Prep "System toggle added"
+} catch { Log-Error "Sys toggle" $_.Exception.Message }
 
-# 27) License toggle
+# License toggle
 try {
-    $licBtn = New-Object Windows.Forms.Button
+    $licBtn = New-Object System.Windows.Forms.Button
     $licBtn.Text = "License"
-    $licBtn.Size = New-Object Drawing.Size(120,35)
-    $licBtn.Location = New-Object Drawing.Point(400,635)
-    $licBtn.BackColor = [System.Drawing.Color]::Green
+    $licBtn.Size = New-Object System.Drawing.Size(110,30)
+    $licBtn.Location = New-Object System.Drawing.Point(420,700)
+    $licBtn.BackColor = [System.Drawing.Color]::SeaGreen
     $licBtn.Add_Click({
         try {
-            $newState = -not $LicenseLabel.Visible
-            $LicenseLabel.Visible = $newState
-            $LicenseIcon.Visible = $newState
-        } catch {
-            Write-Host "Toggle license failed: $_"
-        }
+            if ($null -ne $global:LicenseLabel) { $global:LicenseLabel.Visible = -not $global:LicenseLabel.Visible }
+            if ($null -ne $global:LicenseIcon)  { $global:LicenseIcon.Visible  = -not $global:LicenseIcon.Visible  }
+        } catch { Log-Error "LicenseToggle" $_.Exception.Message }
     })
     $form.Controls.Add($licBtn)
-    Log-Prep "License Toggle Button Added"
-} catch {
-    Log-Error "License Toggle Button" $_.Exception.Message
-}
+    Log-Prep "License toggle added"
+} catch { Log-Error "Lic toggle" $_.Exception.Message }
 
-# Finish layout and show form
+# finalize
 try {
     $form.ResumeLayout()
+    Log-Prep "Showing form"
     [void]$form.ShowDialog()
-    Log-Prep "GUI Displayed - Everything Loaded"
+    Log-Prep "GUI closed"
 } catch {
-    Log-Error "GUI Display" $_.Exception.Message
+    Log-Error "ShowDialog" $_.Exception.Message
 }
